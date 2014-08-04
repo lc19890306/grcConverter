@@ -1,0 +1,1 @@
+clang++ -ggdb -O0 *.cpp -o grcConverter -I /usr/include/libxml2/ -L/usr/lib/x86_64-linux-gnu -lxml2 -lz -lm #-lboost_system

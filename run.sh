@@ -1,0 +1,1 @@
+./grcConverter test.grc

@@ -1,0 +1,28 @@
+#include "grc_variable.h"
+
+variable::variable() {}
+variable::~variable() {}
+string variable::assembleStmt(blockInfo bi) {
+  string res;
+
+  id = bi.find("id");
+  _enabled = bi.find("_enabled");
+  if (_enabled == "False") {
+    return res;
+  }
+  value = bi.find("value");
+  string dataType = (isInt(value)) ? "int" : "float";
+  res += INDENT;
+  res += dataType;
+  res += " ";
+  res += id;
+  res += " ";
+  res += "=";
+  res += " ";
+  res += value;
+  res += ";";
+
+  return res;
+}
+
+const object *variable::theObject = object::Register<variable>("variable");

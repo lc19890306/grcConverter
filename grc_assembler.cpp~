@@ -1,0 +1,20 @@
+#include "grc_assembler.h"
+#include "grc_block.h"
+
+using namespace std;
+
+void cppAssembler::assemble(vBlock blocks, vConnection connections) {
+  int i, size = blocks.size();
+  for (i = 0; i < size; ++i) {
+    blockInfo bi = blocks[i];
+    string blockName = bi.getKey();
+    block *blk = object::forName(blockName)->newInstance();
+    cppPair pair = blk->assembleStmt(bi);
+    headers.insert(pair.header);
+    body.push_back(pair.stmt);
+    cout << pair.header << endl;
+    cout << pair.stmt << endl;
+
+  }
+
+}

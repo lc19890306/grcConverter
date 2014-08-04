@@ -1,0 +1,21 @@
+#ifndef __H_GRC_ASSEMBLER_
+#define __H_GRC_ASSEMBLER_
+
+#include "grc_headers.h"
+#include "grc_structures.h"
+#include <vector>
+#include <string>
+#include <set>
+
+class cppAssembler {
+ public:
+  cppAssembler() {}
+  ~cppAssembler() {}
+
+  void assemble(vBlock blocks, vConnection connections);
+
+ private:
+  cppFile file;
+};
+
+#endif // __H_GRC_ASSEMBLER_

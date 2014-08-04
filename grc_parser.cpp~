@@ -1,0 +1,97 @@
+#include "grc_parser.h"
+
+int grcParser::parse(char *grcFile) {
+  xmlDocPtr doc = xmlReadFile(grcFile, "ASCII", XML_PARSE_RECOVER);
+  if (NULL == doc) {
+    cout << "Document not parsed successfully." << endl;
+    return -1;
+  }
+  xmlNodePtr curNode = xmlDocGetRootElement(doc);
+  if (NULL == curNode) {
+    std::cout << "empty document" << std::endl;
+    return -1;
+  }
+  if (xmlStrcmp(curNode->name, BAD_CAST "flow_graph")) {
+    std::cout << "document of the wrong type, root node != flow_graph" << std::endl;
+    xmlFreeDoc(doc);
+    return -1;
+  }
+  curNode = curNode->xmlChildrenNode;
+  parseNode(curNode);
+  return 0;
+}
+
+void grcParser::parseNode(xmlNodePtr &curNode, blockInfoPtr bi, connectionInfoPtr ci, paramInfoPtr pi, unsigned level) {
+  xmlChar *szKey;
+  while (curNode != NULL) {
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"block"))) {
+      blockInfo bi;
+      parseNode(curNode->xmlChildrenNode, &bi, NULL, NULL, level + 1);
+      blocks.push_back(bi);
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"connection"))) {
+      connectionInfo ci;
+      parseNode(curNode->xmlChildrenNode, NULL, &ci, NULL, level + 1);
+      connections.push_back(ci);
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"key"))) {
+      szKey = xmlNodeGetContent(curNode);
+      string key = string((char *)szKey);
+      if (level > 1) {
+	pi->setKey(key);
+      }
+      else {
+	bi->setKey(key);
+      }
+      xmlFree(szKey);
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"param"))) {
+      paramInfo pi;
+      parseNode(curNode->xmlChildrenNode, NULL, NULL, &pi, level + 1);
+      if (!pi.getKey().empty()) {
+	bi->addParam(pi);
+      }
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"value"))) {
+      szKey = xmlNodeGetContent(curNode);
+      string value = string((char *)szKey);
+      if (!pi->getKey().empty()) {
+	pi->setValue(value);
+      }
+      xmlFree(szKey);
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"source_block_id"))) {
+      szKey = xmlNodeGetContent(curNode);
+      string source_block_id = string((char *)szKey);
+      ci->setSourceBlockId(source_block_id);
+      xmlFree(szKey);
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"sink_block_id"))) {
+      szKey = xmlNodeGetContent(curNode);
+      string sink_block_id = string((char *)szKey);
+      ci->setSinkBlockId(sink_block_id);
+      xmlFree(szKey);
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"source_key"))) {
+      szKey = xmlNodeGetContent(curNode);
+      string source_key = string((char *)szKey);
+      ci->setSourceKey(source_key);
+      xmlFree(szKey);
+    }
+    if ((!xmlStrcmp(curNode->name, (const xmlChar *)"sink_key"))) {
+      szKey = xmlNodeGetContent(curNode);
+      string sink_key = string((char *)szKey);
+      ci->setSinkKey(sink_key);
+      xmlFree(szKey);
+    }
+    curNode = curNode->next;
+  }
+}
+
+vBlock grcParser::getBlocks() const {
+  return blocks;
+}
+
+vConnection grcParser::getConnections() const {
+  return connections;
+}

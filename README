@@ -1,0 +1,13 @@
+Currently:
+make
+./grcConverter test.grc
+./run_test.sh test.cpp
+./test.exe
+
+Expected:
+make
+./grcCovnerter -p test.grc
+...manually write corresponding c++ files for each block
+./grcConverter test.grc
+./run_test.sh test.cpp
+./test.exe

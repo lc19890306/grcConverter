@@ -1,0 +1,52 @@
+#include "grc_analog_sig_source_x.h"
+
+analog_sig_source_x::analog_sig_source_x() {}
+analog_sig_source_x::~analog_sig_source_x() {}
+cppPair analog_sig_source_x::assembleStmt(const blockInfo bi) {
+  cppPair res;
+
+  id = bi.find("id");
+  _enabled = bi.find("_enabled");
+  if (_enabled == "False") {
+    return res;
+  }
+  type = bi.find("type");
+  samp_rate = bi.find("samp_rate");
+  waveform = bi.find("waveform");
+  freq = bi.find("freq");
+  amp = bi.find("amp");
+
+  string stmt;
+  stmt += INDENT;
+  stmt += "gr::analog::sig_source_f::sptr";
+  stmt += " ";
+  stmt += id;
+  stmt += " ";
+  stmt += "=";
+  stmt += " ";
+  if (type == "float") {
+    stmt += "gr::analog::sig_source_f::make";
+  }
+  stmt += "(";
+  stmt += samp_rate;
+  stmt += ",";
+  stmt += " ";
+  if (waveform == "analog.GR_COS_WAVE") {
+    stmt += "gr::analog::GR_COS_WAVE";
+  }
+  stmt += ",";
+  stmt += " ";
+  stmt += freq;
+  stmt += ",";
+  stmt += " ";
+  stmt += amp;
+  stmt += ")";
+  stmt += ";";
+
+  res.header = "#include <gnuradio/analog/sig_source_f.h>";
+  res.stmt = stmt;
+
+  return res;
+}
+
+const object *analog_sig_source_x::theObject = object::Register<analog_sig_source_x>("analog_sig_source_x");

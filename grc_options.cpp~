@@ -1,0 +1,35 @@
+#include "grc_options.h"
+options::options() {}
+options::~options() {}
+cppPair options::assembleStmt(const blockInfo bi) {
+  cppPair res;
+
+  id = bi.find("id");
+  _enabled = bi.find("_enabled");
+  if (_enabled == "False") {
+    return res;
+  }
+
+  string stmt;
+  stmt += INDENT;
+  stmt += "gr::top_block_sptr";
+  stmt += " ";
+  stmt += "tb";
+  stmt += " ";
+  stmt += "=";
+  stmt += " ";
+  stmt += "gr::make_top_block";
+  stmt += "(";
+  stmt += "\"";
+  stmt += id;
+  stmt += "\"";
+  stmt += ")";
+  stmt += ";";
+
+  res.header = "#include <gnuradio/top_block.h>";
+  res.stmt = stmt;
+
+  return res;
+}
+
+const object *options::theObject = object::Register<options>("options");
